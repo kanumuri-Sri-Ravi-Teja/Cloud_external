@@ -1,0 +1,128 @@
+https://docs.google.com/document/d/18I_a4vVZG3GHx-QQymgpVlznUkpj7Eq3ZzrBID6zpMw/edit
+user318@roidtc.com
+august21ROI
+
+sample-master/external
+http://www.git-scm.com/book/en/v2
+
+ls
+----------------------------------------------------------------------------------
+Git
+----------------------------------------------------------------------------------
+.gitignore
+----------------------------------------------------------------------------------
+node_modules
+logs
+*.log
+npm-debug.log*
+
+git config --global user.email "your_email_on_github"
+git config --global user.name "your_github_user_name"
+Verify with: git config --global --list
+
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin your-git-internal-repo-address
+git push -u origin master
+
+
+To show the branch :git branch
+To create a branch: git branch new-feature-X 
+To select a branch: git checkout new-feature-X
+
+
+First checkout the master: git checkout master
+Then merge the branch: git merge new-feature-X
+----------------------------------------------------------------------------------
+Docker:
+----------------------------------------------------------------------------------
+-t =>Tag, internal => image name , v1=> version
+****create a dockerfile*****
+
+# Use Google base image for NodeJS
+FROM launcher.gcr.io/google/nodejs
+
+# Copy application code.
+COPY . /app/
+
+# Change the working directory
+WORKDIR /app
+
+# Install dependencies.
+RUN npm install
+
+# Start the Express app
+CMD ["node", "server.js"]
+
+
+****create a .dockerignore*****
+node_modules
+npm-debug.log
+
+To build external, from the external folder:
+docker build . -t external:v1.0.0
+To build internal, from the internal folder:
+docker build . -t internal:v1.0.0
+
+To run internal, from the internal folder:
+docker run -d -p 8082:8082 internal:v1.0.0
+To run external, from the external folder
+docker run -d -p 8080:8080 -e SERVER='http://localhost:8082' --network="host" external:v1.0.0
+Test your app by previewing on port 8080
+Other commands to try:
+docker images
+docker ps -a
+docker stop <ContainerID>
+docker rm <ContainerID>
+
+
+**** Docker container registry*****
+
+In the Google Cloud Console, go to Container Registry 
+Enable the API if needed
+Click Settings on left
+Enable Vulnerability Scanning
+In Cloud Shell:
+From external folder, run the following command:
+gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/external-image:v1.0.0 .
+Type Y if asked to enable API
+From internal folder, run the following command:
+gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/internal-image:v1.0.0 
+
+
+If you have any previous containers running, you will need to stop them
+Or you will get a port number already in use error
+Below are a few commands to help you stop any containers: 
+List all Docker processes with: docker ps -a
+Stop and remove all Docker processes:
+docker stop <container_id>
+docker rm <container_id>
+List and delete all the local Docker images:
+docker images
+docker rmi <image-id>
+
+
+In CloudShell, run the case study directly from the container registry
+Refer back to the last activity for the Docker run commands
+Use the URL to the image in the registry for the image names
+For example, your run commands will look similar to:	
+docker run -d -p 8082:8082 gcr.io/$GOOGLE_CLOUD_PROJECT/internal-image:v1.0.0
+docker run -d -p 8080:8080 -e SERVER='http://localhost:8082' --network="host" gcr.io/$GOOGLE_CLOUD_PROJECT/external-image:v1.0.0
+
+
+
+Docker Hub:
+
+
+Go to Docker Hub (https://hub.docker.com) 
+Create an account
+Rebuild your Docker images using your Docker ID
+From external folder:
+docker build -t your-docker-hub-id/external:v1.0 .
+From internal  folder:
+docker build -t your-docker-hub-id/internal:v1.0 .
+In Cloud Shell:
+docker login
+docker push your-docker-hub-id/internal:v1.0
+docker push your-docker-hub-id/external:v1.0
