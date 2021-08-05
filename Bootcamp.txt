@@ -114,7 +114,6 @@ docker run -d -p 8080:8080 -e SERVER='http://localhost:8082' --network="host" gc
 
 Docker Hub:
 
-
 Go to Docker Hub (https://hub.docker.com) 
 Create an account
 Rebuild your Docker images using your Docker ID
@@ -126,3 +125,30 @@ In Cloud Shell:
 docker login
 docker push your-docker-hub-id/internal:v1.0
 docker push your-docker-hub-id/external:v1.0
+
+----------------------------------------------------------------------------------
+----------------------------------------------------------------------------------
+Kubernetes:
+gcloud container clusters get-credentials cluster-1 --zone us-central1-c --project dtcaugust2021-318
+
+From the Google Cloud Console (https://console.cloud.google.com):
+Click the Navigation menu and select Kubernetes Engine
+Use the Console to create a cluster with following settings:
+Standard Mode cluster (not Autopilot)
+Zonal cluster (should be the default)
+Click default-pool and verify the number of nodes is 3
+Click Nodes, verify the machine type is a standard-2 (2 CPUs) and NOT a shared-core, and check the Enable preemptible nodes
+Click Security, and set Access Scopes to Allow full access to all Cloud APIs
+Click the Create button
+Wait for it to be created (3-5 minutes)
+
+A Connect button will appear when the cluster is ready
+Click the three vertical dots       and then the Connect button, and then choose Run in Cloud Shell
+Cloud Shell will open with a command pre-created
+Run the command
+This command creates the kubectl config file for your cluster
+When it has completed, test your access by using kubectl commands:
+kubectl get services 
+This should return a single service named Kubernetes
+kubectl get nodes
+This should return 3 nodes
